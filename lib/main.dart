@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                           height: 60,
                           alignment: Alignment.center,
                           child: Text(
-                            "show fragment in Multiple-Flutters",
+                            "show fragment use Multiple-Flutters",
                           )),
                     ),
                     SizedBox(height: 100),
