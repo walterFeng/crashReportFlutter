@@ -6,12 +6,14 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.fragment.app.FragmentActivity
+import io.flutter.FlutterInjector
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.android.TransparencyMode
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.embedding.engine.renderer.FlutterUiDisplayListener
 import io.flutter.plugins.GeneratedPluginRegistrant
-import io.flutter.view.FlutterMain
 
 class DartWidgetsManager {
     lateinit var context: FragmentActivity
@@ -27,18 +29,18 @@ class DartWidgetsManager {
             container.id = widgetId
             widgetContainer?.addView(container, LinearLayout.LayoutParams(493, 500))
             val fragment = FlutterFragment.NewEngineFragmentBuilder(MyFlutterFragment::class.java)
-                .appBundlePath(FlutterMain.findAppBundlePath())
-                .dartEntrypoint("printerPage")
-                .transparencyMode(TransparencyMode.transparent)
-                .renderMode(RenderMode.surface)
-                .build<MyFlutterFragment>()
+                    .appBundlePath(FlutterInjector.instance().flutterLoader().findAppBundlePath())
+                    .dartEntrypoint("printerPage")
+                    .transparencyMode(TransparencyMode.transparent)
+                    .renderMode(RenderMode.surface)
+                    .build<MyFlutterFragment>()
 
             context.supportFragmentManager.beginTransaction()
-                .add(widgetId, fragment, "dartFragment${widgetId}")
-                .commitAllowingStateLoss()
+                    .add(widgetId, fragment, "dartFragment${widgetId}")
+                    .commitAllowingStateLoss()
 
             fragment.setOnFragmentAttachedListener(object :
-                MyFlutterFragment.OnFragmentAttachedListener {
+                    MyFlutterFragment.OnFragmentAttachedListener {
                 override fun onFragmentAttached() {
                     RegisterPrinterPlugin.registerWith(context, fragment.flutterEngine!!)
                     GeneratedPluginRegistrant.registerWith(fragment.flutterEngine!!)
@@ -48,28 +50,59 @@ class DartWidgetsManager {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    fun addDartWidget1() {
+        dispose()
+        widgetContainer?.post {
+            val container = FrameLayout(context)
+            container.id = widgetId
+            widgetContainer?.addView(container, LinearLayout.LayoutParams(493, 500))
+
+            val app = context.applicationContext as RegisterApplication
+            // This has to be lazy to avoid creation before the FlutterEngineGroup.
+            val dartEntrypoint =
+                    DartExecutor.DartEntrypoint(
+                            FlutterInjector.instance().flutterLoader().findAppBundlePath(), "printerPage"
+                    )
+            val engine = app.engines.createAndRunEngine(context, dartEntrypoint)
+            
+            GeneratedPluginRegistrant.registerWith(engine)
+            RegisterPrinterPlugin.registerWith(context, engine)
+            
+            FlutterEngineCache.getInstance().put("dartFragment", engine)
+            
+            val fragment =
+                    FlutterFragment.withCachedEngine("dartFragment").build<FlutterFragment>()
+            val fragmentManager = context.supportFragmentManager
+            fragmentManager.beginTransaction()
+                    .add(widgetId, fragment, "dartFragment${widgetId}")
+                    .commitAllowingStateLoss()
+            container.tag = fragment
+        }
+    }
+
     ///Reset the height of the widget.
     fun requestLayout(
-        width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
-        height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
-        listener: DisplayListener? = null
+            width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
+            height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
+            listener: DisplayListener? = null
     ) {
         if (widgetContainer!!.childCount > 0 && height > 0) {
             val oldContainer =
-                widgetContainer!!.findViewById<ViewGroup>(widgetId)
+                    widgetContainer!!.findViewById<ViewGroup>(widgetId)
             oldContainer?.layoutParams?.width =
-                if (width > 0) width else oldContainer!!.layoutParams!!.width
+                    if (width > 0) width else oldContainer!!.layoutParams!!.width
             oldContainer?.layoutParams?.height =
-                if (height > 0) height else oldContainer!!.layoutParams!!.height
+                    if (height > 0) height else oldContainer!!.layoutParams!!.height
             Log.e(
-                "addDartWidget",
-                "layout${widgetId}"
+                    "addDartWidget",
+                    "layout${widgetId}"
             )
             oldContainer?.requestLayout()
             if (listener != null && oldContainer?.tag != null) {
                 listener.flutterFragment = oldContainer.tag as? FlutterFragment
                 (oldContainer.tag as? FlutterFragment)?.flutterEngine?.renderer?.addIsDisplayingFlutterUiListener(
-                    listener
+                        listener
                 )
                 oldContainer.tag = null
             }
@@ -90,7 +123,7 @@ class DartWidgetsManager {
                 val fragment = (v.tag as? FlutterFragment)
                 fragment?.let {
                     MainActivity.mainActivity!!.supportFragmentManager.beginTransaction()
-                        .remove(v.tag as FlutterFragment).commitAllowingStateLoss()
+                            .remove(v.tag as FlutterFragment).commitAllowingStateLoss()
                 }
                 result = true
             }
@@ -121,7 +154,7 @@ class DartWidgetsManager {
     }
 
     open class DisplayListener(var flutterFragment: FlutterFragment? = null) :
-        FlutterUiDisplayListener {
+            FlutterUiDisplayListener {
 
         override fun onFlutterUiNoLongerDisplayed() {}
 

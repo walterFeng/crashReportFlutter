@@ -21,7 +21,7 @@ class _PrintPageState extends State<PrintPage> {
   GlobalKey rootKey = new GlobalKey();
   static const MethodChannel _channel =
       const MethodChannel('cc.yourdream.register/printer');
-  List<String> list = new List();
+  List<String> list = [];
 
   double currentHeight = 0;
   int currentState = 0;
@@ -29,20 +29,6 @@ class _PrintPageState extends State<PrintPage> {
   @override
   void initState() {
     super.initState();
-    requestData();
-  }
-
-  void requestData() {
-    postDelay(() {
-      setState(() {
-        for (int i = 0; i < 10; i++) {
-          list.add("thanks");
-          list.add("for");
-          list.add("your");
-          list.add("handling");
-        }
-      });
-    }, delay: 1500);
   }
 
   @override
@@ -65,30 +51,13 @@ class _PrintPageState extends State<PrintPage> {
   }
 
   Widget bodyContent() {
-    List<Widget> contents = [];
-    for (int i = 0; i < list.length; i++) {
-      contents.add(Container(
-          width: double.infinity,
-          height: 45,
-          padding: EdgeInsets.only(left: 20),
-          margin: EdgeInsets.all(2),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(4),
-              boxShadow: [
-                BoxShadow(
-                    color: Color(0x1A000000),
-                    offset: Offset(0, 5),
-                    blurRadius: 17,
-                    spreadRadius: 0)
-              ]),
-          child: Text(list[i],
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontFamily: "PingFang-Medium"))));
-    }
+    List<Widget> contents = [
+      Container(
+          width: 188,
+          height: 64,
+          child: Image.asset("assets/images/icon_icy_logo.png",
+              width: widget.pageWidth, height: 64))
+    ];
     try {
       return SingleChildScrollView(
           child: Column(

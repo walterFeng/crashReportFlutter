@@ -64,6 +64,41 @@ class RegisterPrinterPlugin constructor(private val activity: Activity) : Flutte
                         })
                 result.success(true)
             }
+            "printReceiptMultipleFlutters" -> {
+                val requestLayout = call.argument<Int>("requestLayout") ?: 0
+                val width = call.argument<Int>("width") ?: 0
+                val height = call.argument<Int>("height") ?: 0
+
+                if (requestLayout == 0) {
+                    //init flutter view:
+                    DartWidgetsManager
+                        .from(activity as FragmentActivity)
+                        .container(MainActivity.mainActivity?.widgetContainer)
+                        .addDartWidget1()
+                    result.success(true)
+                    return
+                }
+                DartWidgetsManager
+                    .from(activity as FragmentActivity)
+                    .container(MainActivity.mainActivity?.widgetContainer)
+                    .requestLayout(width,
+                        height, object : DartWidgetsManager.DisplayListener() {
+                            var isFirst = true
+                            override fun onFlutterUiDisplayed() {
+                                if (!isFirst) {
+                                    return
+                                }
+                                isFirst = false
+                                super.onFlutterUiDisplayed()
+
+                                Handler().postDelayed(
+                                    { printCached(flutterFragment?.flutterEngine) },
+                                    800
+                                )
+                            }
+                        })
+                result.success(true)
+            }
             else -> result.notImplemented()
         }
     }

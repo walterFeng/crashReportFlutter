@@ -47,6 +47,21 @@ class MyApp extends StatelessWidget {
                             "show fragment",
                           )),
                     ),
+                    SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        _channel.invokeMethod(
+                            "printReceiptMultipleFlutters", new HashMap());
+                      },
+                      child: Container(
+                          color: Colors.deepOrangeAccent,
+                          width: 120,
+                          height: 60,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "print fragment in Multiple-Flutters",
+                          )),
+                    ),
                     SizedBox(height: 100),
                     Text(
                         "Click the 'show fragment' button to display a FragmentFragment. It rarely encounters flashbacks in development (in fact, I've only encountered them once in development), but when published to an online environment, users use a large number of flashbacks through a background error reporting program. So you may need to click this button repeatedly at intervals to make it crash.")
