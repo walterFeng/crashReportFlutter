@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                           height: 60,
                           alignment: Alignment.center,
                           child: Text(
-                            "print fragment in Multiple-Flutters",
+                            "show fragment in Multiple-Flutters",
                           )),
                     ),
                     SizedBox(height: 100),
@@ -75,5 +75,8 @@ class MyApp extends StatelessWidget {
 }
 
 @pragma('vm:entry-point')
-void printerPage() => runApp(MaterialApp(
-    home: Scaffold(body: PrintPage()), debugShowCheckedModeBanner: false));
+void printerPage() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialApp(
+      home: Scaffold(body: PrintPage()), debugShowCheckedModeBanner: false));
+}
