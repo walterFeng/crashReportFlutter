@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
                     ),
                     SizedBox(height: 100),
                     Text(
-                        "Click the 'show fragment' button to display a FragmentFragment. It rarely encounters flashbacks in development (in fact, I've only encountered them once in development), but when published to an online environment, users use a large number of flashbacks through a background error reporting program. So you may need to click this button repeatedly at intervals to make it crash.")
+                        "The fragment will be removed after a few seconds. Click another button to see the display status.")
                   ],
                 )),
           );
